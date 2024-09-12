@@ -1,4 +1,4 @@
-import { Box, Divider, List, ListItem, Paper, Stack, Typography} from "@mui/material";
+import { Box, Divider, ListItem, Paper, Stack, Typography} from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import DragDropFileUpload from "../../components/fileupload";
 import { useState } from "react";
@@ -20,7 +20,7 @@ const PopulatedView: React.FC<{data: Snapshot[]}> = (props) => {
     const curData =  props.data.find(d => new Date(d.timestamp).getTime() >= wallTime) as Snapshot
     const citedIdx = curData.data.answer.flatMap(a => a.citations).reverse()
 
-    const cited = curData.data.references
+    // const cited = curData.data.references
     const uncited = curData.data.references
     return <Grid container spacing="10pt" maxHeight="100vh">
             <Grid size={12}>
