@@ -1,5 +1,4 @@
 import { Box, Divider, ListItem, Paper, Stack, Typography } from "@mui/material";
-import Grid from '@mui/material/Grid2';
 import DragDropFileUpload from "../../components/fileupload";
 import { useState } from "react";
 import AnswerField from "../../components/answerfield";
