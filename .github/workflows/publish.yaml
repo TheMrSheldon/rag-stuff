@@ -5,7 +5,7 @@ on:
     types: [published]
 
 jobs:
-  build-doc:
+  build-website:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,7 +19,9 @@ jobs:
         run: yarn --frozen-lockfile
       - name: Build
         working-directory: ${{github.workspace}}
-        run: yarn build
+        run: |
+          yarn build
+          touch build/.nojekyll
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
