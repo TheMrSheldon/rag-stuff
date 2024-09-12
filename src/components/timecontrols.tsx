@@ -34,7 +34,14 @@ const TimeControls: React.FC<TimeControlsProps> = (props: TimeControlsProps) => 
     return (
         <Box sx={{ padding: "10pt", display: "flex", alignItems: "center", gap: "10pt" }}>
             <IconButton onClick={() => props.setPlaying(!props.playing)}>{props.playing ? <Pause /> : <PlayArrow />}</IconButton>
-            <Slider sx={{ flexGrow: 1 }} value={props.value} onChange={(e, val) => props.onChange(val as number)} min={0} max={max} valueLabelDisplay="auto"/>
+            <Slider
+                sx={{ flexGrow: 1 }}
+                value={props.value}
+                onChange={(e, val) => props.onChange(val as number)}
+                min={0} max={max}
+                valueLabelDisplay="auto"
+                valueLabelFormat={(v) => new Date(v).toLocaleTimeString()}
+            />
             <Autocomplete
                 disablePortal freeSolo disableClearable
                 options={["1", "2", "10"]}
