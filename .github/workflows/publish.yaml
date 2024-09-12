@@ -1,0 +1,28 @@
+name: Publish Website
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-doc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Install dependencies
+        working-directory: ${{github.workspace}}
+        run: yarn --frozen-lockfile
+      - name: Build
+        working-directory: ${{github.workspace}}
+        run: yarn build
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build/
+          target-folder: ./
+  
