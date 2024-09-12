@@ -2,7 +2,6 @@ import React from 'react'
 import { ThemeProvider, createTheme, useColorScheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Box } from '@mui/material';
 import { AnalysisView } from './features/analysisview/view';
 
@@ -21,11 +20,7 @@ function App() {
   return (
     <Box width="100vw" minHeight="100vh" sx={{ display: 'flex', flexFlow: 'column', backgroundColor: "#e3f2ff" }}>
       <CssBaseline />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<AnalysisView />} />
-        </Routes>
-      </BrowserRouter>
+      <AnalysisView />
     </Box>
   );
 }
