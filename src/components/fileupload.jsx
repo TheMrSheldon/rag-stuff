@@ -7,17 +7,20 @@ function DragDropFileUpload({ onFileUpload }) {
 
   const handleDragOver = useCallback((event) => {
     event.preventDefault();
+    event.stopPropagation();
     setDragOver(true);
   }, []);
 
   const handleDragLeave = useCallback((event) => {
     event.preventDefault();
+    event.stopPropagation();
     setDragOver(false);
   }, []);
 
   const handleDrop = useCallback(
     (event) => {
       event.preventDefault();
+      event.stopPropagation();
       setDragOver(false);
       if (event.dataTransfer.files && event.dataTransfer.files[0]) {
         onFileUpload(event.dataTransfer.files[0]);

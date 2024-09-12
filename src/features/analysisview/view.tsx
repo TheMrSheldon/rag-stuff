@@ -4,6 +4,8 @@ import { useState } from "react";
 import AnswerField from "../../components/answerfield";
 import TimeControls from "../../components/timecontrols";
 import ReferenceBox from "../../components/referencebox";
+import UploadBox from "../../components/uploadbox";
+import { AccessTime, CalendarMonth } from "@mui/icons-material";
 
 function fromJSONL(text: string): Snapshot[] {
     return text.split("\n").filter(Boolean).map((text) => JSON.parse(text))
@@ -25,17 +27,20 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
 
     const topic = referenceData ? referenceData.find((obj: any) => obj.query.id === curData.data.topicid) : null
 
-    return <Box display="flex" flexDirection="column" gap="10pt" maxHeight="97vh" flexWrap="nowrap">
+    return <Box display="flex" flexDirection="column" gap="10pt" maxHeight="97vh" flexWrap="nowrap" flexGrow={1}>
         <Typography variant="h6">{curData.data.topic}</Typography>
         <Box display="flex" flexDirection="row" gap="10pt" flexWrap="nowrap" flexGrow={1} sx={{ overflowY: "auto" }}>
             <Box display="flex" flexDirection="column" gap="10pt" flexWrap="nowrap" flexGrow={1}>
                 <Paper sx={{ flexGrow: 1 }}>
                     <AnswerField answer={curData.data.answer} raw_text={curData.data.raw_text} />
                 </Paper>
-                <Box display="flex" flexDirection="row">
+                <Box display="flex" flexDirection="row" alignItems="center">
                     <Typography>Version: {curData.data.version}</Typography>
                     <Box sx={{ flexGrow: 1 }} />
-                    <Typography>{startDate.toLocaleString()} &mdash; {endDate.toLocaleString()}</Typography>
+                    <Typography fontSize="9pt" display="flex" flexDirection="column">
+                        <Box><CalendarMonth sx={{fontSize: "10pt"}}/> {startDate.toLocaleDateString()}</Box>
+                        <Box><AccessTime sx={{fontSize: "10pt"}}/>{startDate.toLocaleTimeString()} &mdash; {endDate.toLocaleTimeString()}</Box>
+                    </Typography>
                 </Box>
                 <Paper>
                     <TimeControls data={props.data} value={timestamp} onChange={setTimestamp} playing={playing} setPlaying={setPlaying} playbackSpeed={playbackSpeed} setPlaybackSpeed={setPlaybackSpeed} />
@@ -59,10 +64,15 @@ export const AnalysisView: React.FC<{}> = () => {
     const [data, setData] = useState<Snapshot[] | null>(null)
 
     return (
-        <Box maxWidth="1500pt" width="75%" minWidth="500pt" margin="auto" maxHeight="100vh" minHeight="500pt">
+        <UploadBox maxWidth="1500pt" width="75%" minWidth="500pt" margin="auto" maxHeight="100vh" minHeight="500pt" display="flex" onFileUpload={(file: File) => {
+            file.text().then(fromJSONL).then(setData)
+        }}>
+            {/*<HiddenUpload onFileUpload={(file: File) => {
+                file.text().then(fromJSONL).then(setData)
+            }}/>*/}
             {(data === null) ? <DragDropFileUpload onFileUpload={(file: File) => {
                 file.text().then(fromJSONL).then(setData)
             }}></DragDropFileUpload> : <PopulatedView data={data}></PopulatedView>}
-        </Box>
+        </UploadBox>
     )
 }
