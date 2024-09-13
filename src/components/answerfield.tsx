@@ -33,7 +33,7 @@ function renderReferences(text: string) {
 
 const AnswerField: React.FC<AnswerFieldProps> = (props: AnswerFieldProps) => {
     return (
-        <Box padding={"10pt"}>
+        <Box padding={"10pt"} sx={{overflowY: "auto", textAlign: "justify", hyphens: "auto"}}>
             {renderReferences(props.raw_text)}
         </Box>
     );

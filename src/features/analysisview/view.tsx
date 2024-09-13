@@ -73,7 +73,7 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
         </Box>
         <Box display="flex" flexDirection="row" gap="10pt" flexWrap="nowrap" flexGrow={1} sx={{ overflowY: "auto" }}>
             <Box display="flex" flexDirection="column" gap="10pt" flexWrap="nowrap" flexGrow={1}>
-                <Paper sx={{ flexGrow: 1 }}>
+                <Paper sx={{ flexGrow: 1, overflowY: "auto"}}>
                     <AnswerField answer={curData.data.answer} raw_text={curData.data.raw_text} />
                 </Paper>
                 <Box display="flex" flexDirection="row" alignItems="center">
@@ -88,14 +88,24 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
                     <TimeControls data={props.data} value={timestamp} onChange={setTimestamp} playing={playing} setPlaying={setPlaying} playbackSpeed={playbackSpeed} setPlaybackSpeed={setPlaybackSpeed} />
                 </Paper>
             </Box>
-            <FadeStack spacing="5pt" direction="column" sx={{ overflowY: "auto" }} minWidth="fit-content">
+            <FadeStack spacing="5pt" direction="column" sx={{
+                overflowY: "auto", width: "min(500pt, 50%)",
+                '&::-webkit-scrollbar': { width: '5pt' },
+                '&::-webkit-scrollbar-track': { visibility: "hidden"},
+                '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#fff',
+                    border: '1pt solid #aaa',
+                    borderRadius: '2pt',
+                },
+                '&::-webkit-scrollbar-thumb:hover': { background: '#ccc' }
+                }} minWidth="fit-content">
                 {
                     referenceData === null ? <DragDropFileUpload onFileUpload={(file: File) => {
                         file.text().then(fromJSONL).then(setReferenceData)
                     }}></DragDropFileUpload> :
-                        <>{citedIdx.map((i) => <ListItem><ReferenceBox topic={topic} refId={i} reference={curData.data.references[i]} referenceData={referenceData} unused={false} /></ListItem>)}
+                        <>{citedIdx.map((i) => <ListItem sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={i} reference={curData.data.references[i]} referenceData={referenceData} unused={false} /></ListItem>)}
                             <Divider>Uncited</Divider>
-                            {curData.data.references.map((ref, index) => citedIdxSet.has(index)? <></>:<ListItem><ReferenceBox topic={topic} refId={index} reference={ref} referenceData={referenceData} unused /></ListItem>)}</>
+                            {curData.data.references.map((ref, index) => citedIdxSet.has(index)? <></>:<ListItem sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={index} reference={ref} referenceData={referenceData} unused /></ListItem>)}</>
                 }
             </FadeStack>
         </Box>
@@ -109,9 +119,6 @@ export const AnalysisView: React.FC<{}> = () => {
         <UploadBox maxWidth="1500pt" width="75%" minWidth="500pt" margin="auto" maxHeight="100vh" minHeight="500pt" display="flex" onFileUpload={(file: File) => {
             file.text().then(fromJSONL).then(setData)
         }}>
-            {/*<HiddenUpload onFileUpload={(file: File) => {
-                file.text().then(fromJSONL).then(setData)
-            }}/>*/}
             {(data === null) ? <DragDropFileUpload onFileUpload={(file: File) => {
                 file.text().then(fromJSONL).then(setData)
             }} sx={{m: "auto"}}></DragDropFileUpload> : <PopulatedView data={data}></PopulatedView>}

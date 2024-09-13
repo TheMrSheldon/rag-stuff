@@ -28,14 +28,14 @@ const ReferenceBox: React.FC<ReferenceBoxProps> = (props: ReferenceBoxProps) => 
     </Card>
     } else {
         return (
-            <Card sx={{ mb: 1, opacity: props.unused ? 0.5 : 1, width: "500pt" }} variant="outlined">
+            <Card sx={{ mb: 1, opacity: props.unused ? 0.5 : 1 }} variant="outlined">
                 <CardHeader
                     avatar={<Avatar aria-label="recipeid" sx={{backgroundColor: colors[props.refId % colors.length]}}>{props.refId}</Avatar>}
                     title={doc.doc.title}
                     subheader={props.reference}
                 />
                 <CardContent>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx={{textAlign: "justify", hyphens: "auto", width: "min(500pt, 50vw)"}}>
                         {doc.doc.segment}
                     </Typography>
                 </CardContent>
