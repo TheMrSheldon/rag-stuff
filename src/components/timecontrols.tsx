@@ -31,8 +31,24 @@ const TimeControls: React.FC<TimeControlsProps> = (props: TimeControlsProps) => 
         return () => {}
     }, [props, max]);
 
+    const onKeyDown = React.useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === "ArrowLeft") {
+            const start = new Date(props.data[0].timestamp)
+            const wallTime = start.getTime() + props.value
+            const prev = props.data.findLast(d => new Date(d.timestamp).getTime() < wallTime) ?? props.data[0]
+            props.onChange(new Date(prev.timestamp).getTime() - start.getTime())
+        } else if (event.key === "ArrowRight") {
+            const start = new Date(props.data[0].timestamp)
+            const wallTime = start.getTime() + props.value
+            const next = props.data.find(d => new Date(d.timestamp).getTime() > wallTime) ?? props.data[props.data.length - 1]
+            props.onChange(new Date(next.timestamp).getTime() - start.getTime())
+        }
+    }, [props])
+
+    const marks = props.data.map(entry => {return {value: new Date(entry.timestamp).getTime() - start.getTime()}})
+
     return (
-        <Box sx={{ padding: "10pt", display: "flex", alignItems: "center", gap: "10pt" }}>
+        <Box sx={{ padding: "10pt", display: "flex", alignItems: "center", gap: "10pt" }} onKeyDown={onKeyDown}>
             <IconButton onClick={() => props.setPlaying(!props.playing)}>{props.playing ? <Pause /> : <PlayArrow />}</IconButton>
             <Slider
                 sx={{ flexGrow: 1 }}
@@ -40,6 +56,7 @@ const TimeControls: React.FC<TimeControlsProps> = (props: TimeControlsProps) => 
                 onChange={(e, val) => props.onChange(val as number)}
                 min={0} max={max}
                 valueLabelDisplay="auto"
+                marks={marks}
                 valueLabelFormat={(v) => new Date(v).toLocaleTimeString()}
             />
             <Autocomplete

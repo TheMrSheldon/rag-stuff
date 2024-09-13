@@ -5,7 +5,8 @@ import AnswerField from "../../components/answerfield";
 import TimeControls from "../../components/timecontrols";
 import ReferenceBox from "../../components/referencebox";
 import UploadBox from "../../components/uploadbox";
-import { AccessTime, CalendarMonth } from "@mui/icons-material";
+import { AccessTime, CalendarMonth, Numbers, Person } from "@mui/icons-material";
+import { useQueryState } from "../../components/usequerystate";
 
 function fromJSONL(text: string): Snapshot[] {
     return text.split("\n").filter(Boolean).map((text) => JSON.parse(text))
@@ -16,10 +17,10 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
     const endDate = new Date(props.data[props.data.length - 1].timestamp);
     const [timestamp, setTimestamp] = useState<number>(endDate.getTime() - startDate.getTime());
     const [playing, setPlaying] = useState<boolean>(false);
-    const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
+    const [playbackSpeed, setPlaybackSpeed] = useQueryState<number>("speed", 1, Number);
     const [referenceData, setReferenceData] = useState<any | null>(null);
 
-    const wallTime = new Date(props.data[0].timestamp).getTime() + timestamp
+    const wallTime = startDate.getTime() + timestamp
 
     const curData = props.data.find(d => new Date(d.timestamp).getTime() >= wallTime) ?? props.data[props.data.length - 1]
     const citedIdxSet = new Set(curData.data.answer.flatMap(a => a.citations).reverse());
@@ -28,7 +29,13 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
     const topic = referenceData ? referenceData.find((obj: any) => obj.query.id === curData.data.topicid) : null
 
     return <Box display="flex" flexDirection="column" gap="10pt" maxHeight="97vh" flexWrap="nowrap" flexGrow={1}>
-        <Typography variant="h6">{curData.data.topic}</Typography>
+        <Box display="flex" flexDirection="row" alignItems="center">
+            <Typography variant="h6" flexGrow={1}>{curData.data.topic}</Typography>
+            <Typography fontSize="9pt" display="flex" flexDirection="column">
+                <Box><Person sx={{fontSize: "10pt"}}/> {curData.user}</Box>
+                <Box><Numbers sx={{fontSize: "10pt"}}/>{curData.topic}</Box>
+            </Typography>
+        </Box>
         <Box display="flex" flexDirection="row" gap="10pt" flexWrap="nowrap" flexGrow={1} sx={{ overflowY: "auto" }}>
             <Box display="flex" flexDirection="column" gap="10pt" flexWrap="nowrap" flexGrow={1}>
                 <Paper sx={{ flexGrow: 1 }}>
