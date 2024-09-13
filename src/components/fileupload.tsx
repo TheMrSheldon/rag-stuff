@@ -1,24 +1,29 @@
-import { useCallback, useState } from 'react';
-import { Box, Paper, Typography, IconButton } from '@mui/material';
+import React, { useCallback, useState } from 'react';
+import { Box, Paper, PaperProps, Typography, IconButton } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-function DragDropFileUpload({ onFileUpload }) {
+interface DragDropFileUploadProps extends PaperProps {
+  onFileUpload: (file: File) => void
+}
+
+const DragDropFileUpload: React.FC<DragDropFileUploadProps> = (props: DragDropFileUploadProps) => {
+  const {onFileUpload, ...paperProps} = props
   const [dragOver, setDragOver] = useState(false);
 
-  const handleDragOver = useCallback((event) => {
+  const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
     setDragOver(true);
   }, []);
 
-  const handleDragLeave = useCallback((event) => {
+  const handleDragLeave = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
     setDragOver(false);
   }, []);
 
   const handleDrop = useCallback(
-    (event) => {
+    (event: React.DragEvent<HTMLDivElement>) => {
       event.preventDefault();
       event.stopPropagation();
       setDragOver(false);
@@ -30,10 +35,9 @@ function DragDropFileUpload({ onFileUpload }) {
   );
 
   const handleChange = useCallback(
-    (event) => {
-      if (event.target.files && event.target.files[0]) {
+    (event: React.ChangeEvent<HTMLDivElement>) => {// @ts-ignore
+      if (event.target.files && event.target.files[0])// @ts-ignore
         onFileUpload(event.target.files[0]);
-      }
     },
     [onFileUpload]
   );
@@ -51,6 +55,7 @@ function DragDropFileUpload({ onFileUpload }) {
         cursor: 'pointer',
         background: dragOver ? '#eee' : '#fafafa',
       }}
+      {...paperProps}
     >
       <input
         accept="image/*"

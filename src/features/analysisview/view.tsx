@@ -1,6 +1,6 @@
-import { Box, Divider, ListItem, Paper, Stack, Typography } from "@mui/material";
+import { Box, Divider, ListItem, Paper, Stack, StackProps, Typography } from "@mui/material";
 import DragDropFileUpload from "../../components/fileupload";
-import { useState } from "react";
+import React, { useState } from "react";
 import AnswerField from "../../components/answerfield";
 import TimeControls from "../../components/timecontrols";
 import ReferenceBox from "../../components/referencebox";
@@ -11,6 +11,41 @@ import { useQueryState } from "../../components/usequerystate";
 function fromJSONL(text: string): Snapshot[] {
     return text.split("\n").filter(Boolean).map((text) => JSON.parse(text))
 }
+
+interface FadeStackProps extends StackProps {}
+
+const FadeStack: React.FC<FadeStackProps> = (props: FadeStackProps) => {
+    const { ...stackProps } = props;
+    const [atStart, setAtStart] = useState<boolean>(true);
+    const [atEnd, setAtEnd] = useState<boolean>(false);
+    const threshold = 1
+
+    stackProps.sx ??= {}
+    if (atStart && atEnd) {
+        /** Nothing **/
+    } else if (atStart && !atEnd) {
+        // @ts-ignore
+        stackProps.sx.maskImage = "linear-gradient(#ffff calc(100% - 50pt),#0000 calc(100% - 10pt))"
+    } else if (!atStart && atEnd) {
+        // @ts-ignore
+        stackProps.sx.maskImage = "linear-gradient(#0000 10pt, #ffff 50pt)"
+    } else {
+        // @ts-ignore
+        stackProps.sx.maskImage = "linear-gradient(#0000 10pt, #ffff 50pt, #ffff calc(100% - 50pt),#0000 calc(100% - 10pt))"
+    }
+    return (
+        <Stack
+            onScroll={(e) => {
+                // @ts-ignore
+                setAtStart(e.target.scrollTop-threshold <= 0)
+                // @ts-ignore
+                setAtEnd(e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + threshold)
+            }}
+            {...stackProps}
+        />
+    );
+}
+  
 
 const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
     const startDate = new Date(props.data[0].timestamp);
@@ -53,7 +88,7 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
                     <TimeControls data={props.data} value={timestamp} onChange={setTimestamp} playing={playing} setPlaying={setPlaying} playbackSpeed={playbackSpeed} setPlaybackSpeed={setPlaybackSpeed} />
                 </Paper>
             </Box>
-            <Stack spacing="5pt" direction="column" sx={{ overflowY: "auto" }} minWidth="fit-content">
+            <FadeStack spacing="5pt" direction="column" sx={{ overflowY: "auto" }} minWidth="fit-content">
                 {
                     referenceData === null ? <DragDropFileUpload onFileUpload={(file: File) => {
                         file.text().then(fromJSONL).then(setReferenceData)
@@ -62,7 +97,7 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
                             <Divider>Uncited</Divider>
                             {curData.data.references.map((ref, index) => citedIdxSet.has(index)? <></>:<ListItem><ReferenceBox topic={topic} refId={index} reference={ref} referenceData={referenceData} unused /></ListItem>)}</>
                 }
-            </Stack>
+            </FadeStack>
         </Box>
     </Box>
 }
@@ -79,7 +114,7 @@ export const AnalysisView: React.FC<{}> = () => {
             }}/>*/}
             {(data === null) ? <DragDropFileUpload onFileUpload={(file: File) => {
                 file.text().then(fromJSONL).then(setData)
-            }}></DragDropFileUpload> : <PopulatedView data={data}></PopulatedView>}
+            }} sx={{m: "auto"}}></DragDropFileUpload> : <PopulatedView data={data}></PopulatedView>}
         </UploadBox>
     )
 }
