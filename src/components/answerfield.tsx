@@ -24,7 +24,7 @@ function renderReferences(text: string) {
     while ((match = rgx.exec(text)) !== null) {
         elements.push(text.substring(idx, match.index))
         idx = match.index + match[0].length
-        const citations = match[1].split(/[\s,]+/).filter(Boolean).map(Number).map(n => <CitationTag idx={n}/>)
+        const citations = match[1].split(/[\s,]+/).filter(Boolean).map(Number).map((n, i) => <CitationTag idx={n}/>)
         elements.push(...citations)
     }
     elements.push(text.substring(idx, text.length))

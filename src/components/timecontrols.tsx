@@ -47,8 +47,8 @@ const TimeControls: React.FC<TimeControlsProps> = (props: TimeControlsProps) => 
 
     const marks = props.data.map(entry => {return {value: new Date(entry.timestamp).getTime() - start.getTime()}})
 
-    return (
-        <Box sx={{ padding: "10pt", display: "flex", alignItems: "center", gap: "10pt" }} onKeyDown={onKeyDown}>
+    return (// @ts-ignore
+        <Box tabIndex="0" sx={{ padding: "10pt", display: "flex", alignItems: "center", gap: "10pt" }} onKeyDown={onKeyDown}>
             <IconButton onClick={() => props.setPlaying(!props.playing)}>{props.playing ? <Pause /> : <PlayArrow />}</IconButton>
             <Slider
                 sx={{ flexGrow: 1 }}

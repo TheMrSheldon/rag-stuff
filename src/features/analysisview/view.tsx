@@ -1,6 +1,6 @@
 import { Box, Divider, ListItem, Paper, Stack, StackProps, Typography } from "@mui/material";
 import DragDropFileUpload from "../../components/fileupload";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AnswerField from "../../components/answerfield";
 import TimeControls from "../../components/timecontrols";
 import ReferenceBox from "../../components/referencebox";
@@ -54,6 +54,12 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
     const [playing, setPlaying] = useState<boolean>(false);
     const [playbackSpeed, setPlaybackSpeed] = useQueryState<number>("speed", 1, Number);
     const [referenceData, setReferenceData] = useState<any | null>(null);
+    const [refDataURL, setRefDataURL] = useQueryState<string | undefined>("srcurl", undefined, String)
+
+    useEffect(() => {
+        if (refDataURL !== undefined)
+            fetch(refDataURL).then(res => res.text()).then(fromJSONL).then(setReferenceData)
+    }, [refDataURL, setReferenceData])
 
     const wallTime = startDate.getTime() + timestamp
 
@@ -77,7 +83,10 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
                     <AnswerField answer={curData.data.answer} raw_text={curData.data.raw_text} />
                 </Paper>
                 <Box display="flex" flexDirection="row" alignItems="center">
-                    <Typography>Version: {curData.data.version}</Typography>
+                    <Box display="flex" flexDirection="column">
+                        <Typography>Version: {curData.data.version}</Typography>
+                        <Typography variant="caption">{curData.timestamp}</Typography>
+                    </Box>
                     <Box sx={{ flexGrow: 1 }} />
                     <Typography fontSize="9pt" display="flex" flexDirection="column">
                         <Box><CalendarMonth sx={{fontSize: "10pt"}}/> {startDate.toLocaleDateString()}</Box>
@@ -101,11 +110,12 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
                 }} minWidth="fit-content">
                 {
                     referenceData === null ? <DragDropFileUpload onFileUpload={(file: File) => {
+                        setRefDataURL(undefined)
                         file.text().then(fromJSONL).then(setReferenceData)
                     }}></DragDropFileUpload> :
-                        <>{citedIdx.map((i) => <ListItem sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={i} reference={curData.data.references[i]} referenceData={referenceData} unused={false} /></ListItem>)}
+                        <>{citedIdx.map((i) => <ListItem key={`ref${i}`} sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={i} reference={curData.data.references[i]} referenceData={referenceData} unused={false} /></ListItem>)}
                             <Divider>Uncited</Divider>
-                            {curData.data.references.map((ref, index) => citedIdxSet.has(index)? <></>:<ListItem sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={index} reference={ref} referenceData={referenceData} unused /></ListItem>)}</>
+                            {curData.data.references.map((ref, index) => citedIdxSet.has(index)? <></>:<ListItem key={`ref${index}`} sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={index} reference={ref} referenceData={referenceData} unused /></ListItem>)}</>
                 }
             </FadeStack>
         </Box>
@@ -114,9 +124,16 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
 
 export const AnalysisView: React.FC<{}> = () => {
     const [data, setData] = useState<Snapshot[] | null>(null)
+    const [url, setURL] = useQueryState<string | undefined>("url", undefined, String)
+
+    useEffect(() => {
+        if (url !== undefined)
+            fetch(url).then(res => res.text()).then(fromJSONL).then(setData)
+    }, [url, setData])
 
     return (
         <UploadBox maxWidth="1500pt" width="75%" minWidth="500pt" margin="auto" maxHeight="100vh" minHeight="500pt" display="flex" onFileUpload={(file: File) => {
+            setURL(undefined)
             file.text().then(fromJSONL).then(setData)
         }}>
             {(data === null) ? <DragDropFileUpload onFileUpload={(file: File) => {
