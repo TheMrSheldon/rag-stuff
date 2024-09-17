@@ -1,4 +1,4 @@
-import { Box, Divider, ListItem, Paper, Stack, StackProps, Typography } from "@mui/material";
+import { Box, Divider, Paper, Stack, StackProps, Typography } from "@mui/material";
 import DragDropFileUpload from "../../components/fileupload";
 import React, { useEffect, useState } from "react";
 import AnswerField from "../../components/answerfield";
@@ -132,7 +132,7 @@ export const AnalysisView: React.FC<{}> = () => {
     }, [url, setData])
 
     return (
-        <UploadBox maxWidth="1500pt" width="75%" minWidth="500pt" margin="auto" maxHeight="100vh" minHeight="500pt" display="flex" onFileUpload={(file: File) => {
+        <UploadBox maxWidth="1500pt" width="75%" minWidth="min(750pt, 100%)" margin="auto" maxHeight="100vh" minHeight="500pt" display="flex" padding="5pt" onFileUpload={(file: File) => {
             setURL(undefined)
             file.text().then(fromJSONL).then(setData)
         }}>
