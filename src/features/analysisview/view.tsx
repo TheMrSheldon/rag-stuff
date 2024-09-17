@@ -98,7 +98,7 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
                 </Paper>
             </Box>
             <FadeStack spacing="5pt" direction="column" sx={{
-                overflowY: "auto", width: "min(500pt, 50%)",
+                overflowY: "auto",
                 '&::-webkit-scrollbar': { width: '5pt' },
                 '&::-webkit-scrollbar-track': { visibility: "hidden"},
                 '&::-webkit-scrollbar-thumb': {
@@ -107,15 +107,15 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
                     borderRadius: '2pt',
                 },
                 '&::-webkit-scrollbar-thumb:hover': { background: '#ccc' }
-                }} minWidth="fit-content">
+                }} maxWidth="min(500pt, 40%)" minWidth="min(500pt, 40%)">
                 {
                     referenceData === null ? <DragDropFileUpload onFileUpload={(file: File) => {
                         setRefDataURL(undefined)
                         file.text().then(fromJSONL).then(setReferenceData)
                     }}></DragDropFileUpload> :
-                        <>{citedIdx.map((i) => <ListItem key={`ref${i}`} sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={i} reference={curData.data.references[i]} referenceData={referenceData} unused={false} /></ListItem>)}
+                        <>{citedIdx.map((i) => <Box key={`ref${i}`} sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={i} reference={curData.data.references[i]} referenceData={referenceData} unused={false} /></Box>)}
                             <Divider>Uncited</Divider>
-                            {curData.data.references.map((ref, index) => citedIdxSet.has(index)? <></>:<ListItem key={`ref${index}`} sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={index} reference={ref} referenceData={referenceData} unused /></ListItem>)}</>
+                            {curData.data.references.map((ref, index) => citedIdxSet.has(index)? <></>:<Box key={`ref${index}`} sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={index} reference={ref} referenceData={referenceData} unused /></Box>)}</>
                 }
             </FadeStack>
         </Box>

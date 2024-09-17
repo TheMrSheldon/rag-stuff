@@ -35,7 +35,7 @@ const ReferenceBox: React.FC<ReferenceBoxProps> = (props: ReferenceBoxProps) => 
                     subheader={props.reference}
                 />
                 <CardContent>
-                    <Typography variant="body2" color="text.secondary" sx={{textAlign: "justify", hyphens: "auto", width: "min(500pt, 50vw)"}}>
+                    <Typography variant="body2" color="text.secondary" sx={{textAlign: "justify", hyphens: "auto"}}>
                         {doc.doc.segment}
                     </Typography>
                 </CardContent>
