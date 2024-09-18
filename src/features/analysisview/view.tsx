@@ -1,4 +1,4 @@
-import { Box, Divider, Paper, Stack, StackProps, Typography } from "@mui/material";
+import { Box, Divider, Paper, Stack, StackProps, Typography, useTheme } from "@mui/material";
 import DragDropFileUpload from "../../components/fileupload";
 import React, { useEffect, useState } from "react";
 import AnswerField from "../../components/answerfield";
@@ -55,6 +55,7 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
     const [playbackSpeed, setPlaybackSpeed] = useQueryState<number>("speed", 1, Number);
     const [referenceData, setReferenceData] = useState<any | null>(null);
     const [refDataURL, setRefDataURL] = useQueryState<string | undefined>("srcurl", undefined, String)
+    const theme = useTheme()
 
     useEffect(() => {
         if (refDataURL !== undefined)
@@ -69,56 +70,58 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
 
     const topic = referenceData ? referenceData.find((obj: any) => obj.query.id === curData.data.topicid) : null
 
-    return <Box display="flex" flexDirection="column" gap="10pt" maxHeight="97vh" flexWrap="nowrap" flexGrow={1}>
-        <Box display="flex" flexDirection="row" alignItems="center">
+    return <Box display="grid" sx={{
+                gridTemplateColumns: "1fr min(500pt, 40%)",
+                gridTemplateRows: "auto 1fr auto auto",
+                [theme.breakpoints.up("md")]: {gridTemplateAreas: `"header header" "answer sidebar" "info sidebar" "controls sidebar"` },
+                [theme.breakpoints.down("md")]: {gridTemplateAreas: `"header header" "answer sidebar" "info info" "controls controls"` }
+            }}
+            gap="10pt" maxHeight="97vh" flexWrap="nowrap" flexGrow={1}>
+        <Box gridArea="header" display="flex" flexDirection="row" alignItems="center">
             <Typography variant="h6" flexGrow={1}>{curData.data.topic}</Typography>
             <Typography fontSize="9pt" display="flex" flexDirection="column">
                 <Box><Person sx={{fontSize: "10pt"}}/> {curData.user}</Box>
                 <Box><Numbers sx={{fontSize: "10pt"}}/>{curData.topic}</Box>
             </Typography>
         </Box>
-        <Box display="flex" flexDirection="row" gap="10pt" flexWrap="nowrap" flexGrow={1} sx={{ overflowY: "auto" }}>
-            <Box display="flex" flexDirection="column" gap="10pt" flexWrap="nowrap" flexGrow={1}>
-                <Paper sx={{ flexGrow: 1, overflowY: "auto"}}>
-                    <AnswerField answer={curData.data.answer} raw_text={curData.data.raw_text} />
-                </Paper>
-                <Box display="flex" flexDirection="row" alignItems="center">
-                    <Box display="flex" flexDirection="column">
-                        <Typography>Version: {curData.data.version}</Typography>
-                        <Typography variant="caption">{curData.timestamp}</Typography>
-                    </Box>
-                    <Box sx={{ flexGrow: 1 }} />
-                    <Typography fontSize="9pt" display="flex" flexDirection="column">
-                        <Box><CalendarMonth sx={{fontSize: "10pt"}}/> {startDate.toLocaleDateString()}</Box>
-                        <Box><AccessTime sx={{fontSize: "10pt"}}/>{startDate.toLocaleTimeString()} &mdash; {endDate.toLocaleTimeString()}</Box>
-                    </Typography>
-                </Box>
-                <Paper>
-                    <TimeControls data={props.data} value={timestamp} onChange={setTimestamp} playing={playing} setPlaying={setPlaying} playbackSpeed={playbackSpeed} setPlaybackSpeed={setPlaybackSpeed} />
-                </Paper>
+        <Paper sx={{ overflowY: "auto", gridArea: "answer"}}>
+            <AnswerField answer={curData.data.answer} raw_text={curData.data.raw_text} />
+        </Paper>
+        <Box gridArea="info" display="flex" flexDirection="row" alignItems="center">
+            <Box display="flex" flexDirection="column">
+                <Typography>Version: {curData.data.version}</Typography>
+                <Typography variant="caption">{curData.timestamp}</Typography>
             </Box>
-            <FadeStack spacing="5pt" direction="column" sx={{
-                overflowY: "auto",
-                '&::-webkit-scrollbar': { width: '5pt' },
-                '&::-webkit-scrollbar-track': { visibility: "hidden"},
-                '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#fff',
-                    border: '1pt solid #aaa',
-                    borderRadius: '2pt',
-                },
-                '&::-webkit-scrollbar-thumb:hover': { background: '#ccc' }
-                }} maxWidth="min(500pt, 40%)" minWidth="min(500pt, 40%)">
-                {
-                    referenceData === null ? <DragDropFileUpload onFileUpload={(file: File) => {
-                        setRefDataURL(undefined)
-                        file.text().then(fromJSONL).then(setReferenceData)
-                    }}></DragDropFileUpload> :
-                        <>{citedIdx.map((i) => <Box key={`ref${i}`} sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={i} reference={curData.data.references[i]} referenceData={referenceData} unused={false} /></Box>)}
-                            <Divider>Uncited</Divider>
-                            {curData.data.references.map((ref, index) => citedIdxSet.has(index)? <></>:<Box key={`ref${index}`} sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={index} reference={ref} referenceData={referenceData} unused /></Box>)}</>
-                }
-            </FadeStack>
+            <Box sx={{ flexGrow: 1 }} />
+            <Typography fontSize="9pt" display="flex" flexDirection="column">
+                <Box><CalendarMonth sx={{fontSize: "10pt"}}/> {startDate.toLocaleDateString()}</Box>
+                <Box><AccessTime sx={{fontSize: "10pt"}}/>{startDate.toLocaleTimeString()} &mdash; {endDate.toLocaleTimeString()}</Box>
+            </Typography>
         </Box>
+        <Paper sx={{gridArea: "controls"}}>
+            <TimeControls data={props.data} value={timestamp} onChange={setTimestamp} playing={playing} setPlaying={setPlaying} playbackSpeed={playbackSpeed} setPlaybackSpeed={setPlaybackSpeed} />
+        </Paper>
+        <FadeStack gridArea="sidebar" spacing="5pt" direction="column" sx={{
+            overflowY: "auto",
+            '&::-webkit-scrollbar': { width: '5pt' },
+            '&::-webkit-scrollbar-track': { visibility: "hidden"},
+            '&::-webkit-scrollbar-thumb': {
+                backgroundColor: '#fff',
+                border: '1pt solid #aaa',
+                borderRadius: '2pt',
+            },
+            '&::-webkit-scrollbar-thumb:hover': { background: '#ccc' }
+            }}>
+            {
+                referenceData === null ? <DragDropFileUpload onFileUpload={(file: File) => {
+                    setRefDataURL(undefined)
+                    file.text().then(fromJSONL).then(setReferenceData)
+                }}></DragDropFileUpload> :
+                    <>{citedIdx.map((i) => <Box key={`ref${i}`} sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={i} reference={curData.data.references[i]} referenceData={referenceData} unused={false} /></Box>)}
+                        <Divider>Uncited</Divider>
+                        {curData.data.references.map((ref, index) => citedIdxSet.has(index)? <></>:<Box key={`ref${index}`} sx={{p: "0pt"}}><ReferenceBox topic={topic} refId={index} reference={ref} referenceData={referenceData} unused /></Box>)}</>
+            }
+        </FadeStack>
     </Box>
 }
 
