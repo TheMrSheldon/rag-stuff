@@ -79,9 +79,9 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
             gap="10pt" maxHeight="97vh" flexWrap="nowrap" flexGrow={1}>
         <Box gridArea="header" display="flex" flexDirection="row" alignItems="center">
             <Typography variant="h6" flexGrow={1}>{curData.data.topic}</Typography>
-            <Typography fontSize="9pt" display="flex" flexDirection="column">
-                <Box><Person sx={{fontSize: "10pt"}}/> {curData.user}</Box>
-                <Box><Numbers sx={{fontSize: "10pt"}}/>{curData.topic}</Box>
+            <Typography fontSize="9pt" display="flex" flexDirection="column" minWidth="fit-content">
+                <span><Person sx={{fontSize: "10pt"}}/> {curData.user}</span>
+                <span><Numbers sx={{fontSize: "10pt"}}/>{curData.topic}</span>
             </Typography>
         </Box>
         <Paper sx={{ overflowY: "auto", gridArea: "answer"}}>
@@ -94,8 +94,8 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
             </Box>
             <Box sx={{ flexGrow: 1 }} />
             <Typography fontSize="9pt" display="flex" flexDirection="column">
-                <Box><CalendarMonth sx={{fontSize: "10pt"}}/> {startDate.toLocaleDateString()}</Box>
-                <Box><AccessTime sx={{fontSize: "10pt"}}/>{startDate.toLocaleTimeString()} &mdash; {endDate.toLocaleTimeString()}</Box>
+                <span><CalendarMonth sx={{fontSize: "10pt"}}/> {startDate.toLocaleDateString()}</span>
+                <span><AccessTime sx={{fontSize: "10pt"}}/>{startDate.toLocaleTimeString()} &mdash; {endDate.toLocaleTimeString()}</span>
             </Typography>
         </Box>
         <Paper sx={{gridArea: "controls"}}>

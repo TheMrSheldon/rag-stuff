@@ -28,13 +28,22 @@ function renderReferences(text: string) {
         elements.push(...citations)
     }
     elements.push(text.substring(idx, text.length))
+    return elements
+}
+
+function render(text: string) {
+    var elements: (JSX.Element | string)[] = []
+    for (const line of text.split("\n")) {
+        elements.push(...renderReferences(line))
+        elements.push(<br/>)
+    }
     return <>{elements}</>
 }
 
 const AnswerField: React.FC<AnswerFieldProps> = (props: AnswerFieldProps) => {
     return (
         <Box padding={"10pt"} sx={{overflowY: "auto", textAlign: "justify", hyphens: "auto"}}>
-            {renderReferences(props.raw_text)}
+            {render(props.raw_text)}
         </Box>
     );
 }
