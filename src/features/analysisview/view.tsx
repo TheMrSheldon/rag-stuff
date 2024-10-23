@@ -59,7 +59,7 @@ const PopulatedView: React.FC<{ data: Snapshot[] }> = (props) => {
 
     useEffect(() => {
         if (refDataURL !== undefined)
-            fetch(refDataURL).then(res => res.text()).then(fromJSONL).then(setReferenceData)
+            fetch(refDataURL, {cache: "force-cache"}).then(res => res.text()).then(fromJSONL).then(setReferenceData)
     }, [refDataURL, setReferenceData])
 
     const wallTime = startDate.getTime() + timestamp
